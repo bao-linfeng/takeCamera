@@ -7,3 +7,6 @@
  # 启动
  ### yarn dev
  ### yarn electron-start
+
+ # ssh2-sftp-client
+ ### 其插件与程序会有冲突 可不安装
