@@ -32,7 +32,6 @@
                 <div class="img-hand" @mousedown="dragStart" @mousemove.prevent="mouseMove" @wheel.passive="handleWheel"></div>
             </div>
             <!-- 打回原因列表、图片查重列表 -->
-			<!-- v-if="resionList.length || isDuplicate || leaveMsgList.length" -->
             <div class="pass-wrap style1" v-show="sidebarShow">
                 <h3 v-if="resionList.length">打回原因历史:</h3>
                 <div class="repulseRecord-box" v-for="(item,index) in resionList" :key="index">
@@ -42,16 +41,6 @@
 						<p class="returnReason" :class="{decoration: item2.isFinish, active: imageURLActive == item2.name}" @click="changeImage(item2.index, item2.name)">{{item.type == 2 ? ('第'+(item2.index+1)+'页') : ''}} {{item2.returnReason}}</p>
 					</div>
                 </div>
-                <h3 v-if="isDuplicate">图片查重</h3>
-                <p class="image-duplicate-process" v-if="duplicateTotal && isDuplicate">进度：{{duplicatePage}}/{{duplicateTotal}}</p>
-                <ul class="image-duplicate-wrap" v-if="duplicateImageList.length">
-                    <li v-for="(item, index) in duplicateImageList" :key="index">
-                        <div class="image-duplicate-box" :class="{active: drive+imageURLActive == item2}" v-for="(item2, index2) in item" :key="index2" @click="changeImage(index2, item2)">
-                            <img :src="item2" alt="">
-                            <i>{{duplicateImageO[item2]}}</i>
-                        </div>
-                    </li>
-                </ul>
 				<div v-if="leaveMsgList.length" class="leave-msg-list">
 					<h3 class="title">拍机备注</h3>
 					<p class="leave-msg-p" :class="{active: imageIndex === item.i}" @click="changeImage(item.i)" v-for="(item, index) in leaveMsgList" :key="index">第{{item.i+1}}页 {{item.leaveMsg}}</p>
@@ -93,22 +82,11 @@
         <div class="image-center-foot" :style="{height: TH+'px'}">
             <div class="thumbnail-box" :class="{active: imageURLActive === item.name}" v-for="(item,index) in thumbnailList" :key="index" :id="index+(thumbnailPage - 1)*thumbnailLimit" @click="changeImage(index+(thumbnailPage - 1)*thumbnailLimit)">
                 <img class="lazyload" :src="(item.isYun == 1 ? (yun+item.name) : (item.nail ? drive+(item.v ? (item.nail+'?v='+item.v) : item.nail) : 'data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs'))" alt="" />
-                <div class="page-box">
-                    <i>{{index+1+(thumbnailPage - 1)*thumbnailLimit}}</i>
-                </div>
+				<i class="page-box">{{index+1+(thumbnailPage - 1)*thumbnailLimit}}</i>
 				<img v-if="item.selfChecked == 1" class="self-check" src="../assets/imageCenter/tick_blue.svg"  title="自检完成" />
-                <img class="attachedSheet" v-if="item.attachedSheet == 1" title="附页" src="../assets/attachedSheetA.svg" alt="">
+                <img v-if="item.attachedSheet == 1" class="attachedSheet" src="../assets/attachedSheetA.svg"  title="附页" />
 				<i v-if="(detail.takeStatus >= 2 && detail.takeStatus <= 3) || detail.takeStatus == 6" class="check-box" :class="{active: checkImageList.indexOf(item.name) > -1}" :title="checkImageList.indexOf(item.name) > -1 ? '已选中' : '未选中'" @click.stop="checkImage(item.name)"></i>
             </div>
-			<!-- <div class="thumbnail-box" :class="{active: imageURLActive === item.name}" v-for="(item,index) in imageList" :key="index" :id="index" @click="changeImage(index)">
-			    <img class="lazyload" :data-src="(item.isYun == 1 ? (yun+item.name) : (item.nail ? drive+(item.v ? (item.nail+'?v='+item.v) : item.nail) : 'data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs'))" :src="'data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs'" alt="" />
-			    <div class="page-box">
-			        <i>{{index+1}}</i>
-			    </div>
-				<img v-if="item.selfChecked == 1" class="self-check" src="../assets/imageCenter/tick_blue.svg"  title="自检完成" />
-			    <img class="attachedSheet" v-if="item.attachedSheet == 1" title="附页" src="../assets/attachedSheetA.svg" alt="">
-				<i v-if="(detail.takeStatus >= 2 && detail.takeStatus <= 3) || detail.takeStatus == 6" class="check-box" :class="{active: checkImageList.indexOf(item.name) > -1}" :title="checkImageList.indexOf(item.name) > -1 ? '已选中' : '未选中'" @click.stop="checkImage(item.name)"></i>
-			</div> -->
         </div>
         <!-- 裁剪 -->
         <div class="clip-wrap" v-if="isFabric == 1 || isFabric == 3">
@@ -144,7 +122,7 @@
 		<!-- 帮助中心 -->
 		<HelpModule v-if="isHelp" v-on:close="isHelp = false" />
         <!-- 图片查重、拍摄完成、自查完成 -->
-        <ImageSet v-if="isMore" v-on:manual-insertion="toggleInsertion" v-on:rename="rename" :takeStatus="detail.takeStatus" :syncSuccess="detail.syncSuccess" v-on:start-camera="startCamera" v-on:check-focus="checkFocus" v-on:change-duplicate="changeDuplicate" v-on:change-image="imageCheck" v-on:change-check="changeCheck" v-on:start-check="startCheck" v-on:multiple-delete="multipleDeleteConfirm" />
+        <ImageSet v-if="isMore" v-on:manual-insertion="toggleInsertion" v-on:re-name="rename" :takeStatus="detail.takeStatus" :syncSuccess="detail.syncSuccess" v-on:start-camera="startCamera" v-on:change-image="imageCheck" v-on:change-check="changeCheck" v-on:start-check="startCheck" v-on:multiple-delete="multipleDeleteConfirm" />
         <!-- 加载页 -->
         <!-- <Loading v-if="!startCapture" /> -->
         <!-- 确认框 -->
@@ -165,7 +143,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { changePropertyValue, useState } from '../store';
 import { createMsg, getLocalTime, getQueryVariable, setValue, createPromptBox } from '../util/ADS';
 import { camera } from '../util/api';
-import { renameFile, openNikon, writeFile, readFile, unlink, makeCameraDir, openImageCheck, readDirGetFileNames} from '../composables/readFile';
+import { renameFile, openNikon, writeFile, readFile, unlink, makeCameraDir, openImageCheck, readDirGetFileNames, viewProcessMessage} from '../composables/readFile';
 import ImageSet from '../components/ImageSet.vue';
 import Loading from '../components/Loading.vue';
 import ConfirmModule from '../components/ConfirmModule.vue';
@@ -317,25 +295,6 @@ export default {
                     imageIndex.value = 0;
                 }
             }
-			
-			// 查重结果删除
-			// let duplicateI = -1;
-			// duplicateImageList.value.forEach((ele, i) => {
-			// 	duplicateI = -1;
-			// 	ele.forEach((ele2, i2) => {
-			// 		if(ele2.indexOf(filename) > -1){
-			// 			duplicateI = i2;
-			// 		}
-			// 		if(filename2){
-			// 			if(ele2.indexOf(filename2) > -1){
-			// 				duplicateI = i2;
-			// 			}
-			// 		}
-			// 	});
-			// 	if(duplicateI > -1){
-			// 		ele.splice(duplicateI, 1);
-			// 	}
-			// });
 
             imageURL.value = imageList.value.length ? drive+imageList.value[imageIndex.value].name : 'data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=';
             imageURLActive.value = imageList.value.length ? imageList.value[imageIndex.value].name : '';
@@ -428,37 +387,10 @@ export default {
 			}
 		}
 		
-		// 图片裁剪、旋转
-		const initCanvasClip = (url = 'C:/Users/28020/Desktop/1663665889399.jpg') => {
-			let time = Date.now(), 
-			cameraSource, w = 1920, h = 1080,
-			canvas = document.createElement('canvas'), 
-			context = canvas.getContext('2d');
-			const angle = 180 * Math.PI / 180;  
-			
-			var img = new Image();
-			img.crossOrigin = 'anonymous';
-			img.onload = () => {  
-				console.log('加载图片', Date.now() - time);
-				w = img.naturalWidth;
-				h = img.naturalHeight;
-				canvas.width = w;
-				canvas.height = h;
-				
-				context.drawImage(img, 1800, 200, w - 3800, h - 1200, 0, 0, w, h);
-				// context.rotate(angle);  
-				cameraSource = canvas.toDataURL('image/jpeg');
-				console.log('裁剪图片', Date.now() - time);
-				imageURL.value = cameraSource;
-				console.log(cameraSource);
-			}  
-			img.src = url; 
-		}
-		
         // 键盘判断
         const enterKey = (event) => {
             const keyCode = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
-            // console.log(keyCode);
+            console.log(keyCode);
             // enter space 向后拍摄
             if(keyCode == 13 || keyCode == 32){
 				// 未拍摄、拍摄中、自检中、打回
@@ -486,6 +418,13 @@ export default {
             // 右、下
             if(keyCode == 39 || keyCode == 40){
                 nextPage();
+            }
+			// S => STOP
+			if(keyCode == 83){
+				// 停止 自动检查
+				clearInterval(startCheckTimer.value);
+				startCheckTimer.value = null;
+				createMsg('已停止自动检查！', true);
             }
         }
 		
@@ -516,15 +455,6 @@ export default {
         }
 
         const startCapture = ref(false);
-		// 家谱开始拍摄api
-        const taskBegin = async () => {
-            const result = await camera.taskBegin(code, gid);
-            if(result.status == 200){
-                
-            }else{
-                createMsg(result.msg);
-            }
-        }
 		
 		// 本地数据丢失，云端获取数据
         const yun = ref(window.location.origin.indexOf('camera.1jiapu.com') > -1 ? 'http://223.111.180.111:8085/photo' : 'https://sync.qingtime.cn/photo');
@@ -573,31 +503,6 @@ export default {
                 detail.value = result.data;
                 // 拍照顺序获取
                 initJson();
-				// 待拍摄、拍摄中、打回 可以拍摄
-     //            if((detail.value.takeStatus >= 1 && detail.value.takeStatus <= 2) || detail.value.takeStatus == 6){
-     //                // 初始化图片查重
-					// // imageDuplicateCheck();
-					// if(detail.value.isLeadImages == 1){// 电子谱
-					// 	startCapture.value = true;
-					// }else{
-					// 	msg.value = '正在初始化相机，请稍等！(10s)';
-					// 	isPromptBoxModule.value = true;
-					// 	// 定时器倒计时
-					// 	waitTimer = setInterval(() => {
-					// 		waitTime--;
-					// 		msg.value = '正在初始化相机，请稍等！('+waitTime+'s)';
-					// 		if(waitTime <= 0){
-					// 			clearWaitTimer();
-					// 		}
-					// 	}, 1000)
-					// 	// 初始化 相机拍照
-					// 	initCamera();
-					// }
-     //            }
-				// // 同步中、通过 加载页需要隐藏
-    //             if(detail.value.takeStatus == 4 || detail.value.takeStatus == 5 || detail.value.takeStatus == 7 || detail.value.takeStatus == 12){
-    //                 startCapture.value = true;
-    //             }
 	
 				// 拍机程序只启动一次 2023.3.2 => baolf
 				if(window.NikonClip){
@@ -835,81 +740,6 @@ export default {
 			}
 		})
 
-        // 图片查重 
-        let imageDuplicate = null;
-        const duplicatePage = ref(0);
-        const duplicateTotal = ref(0);
-        const duplicateImageList = ref([]);
-        const duplicateImageO = ref({});
-        const isDuplicate = ref(false);
-        // 打开图片查重
-        const imageDuplicateCheck = () => {
-            imageDuplicate = openImageCheck('/getRepeatFiles/ClearRepeatPhoto', (data) => {
-                console.log(`stdout: ${data}`);
-                if(data.indexOf('route:') > -1){
-                    duplicatePage.value = duplicatePage.value + 1;
-                }
-                if(data.indexOf('checkResult|') > -1){
-                    duplicatePage.value = 0;
-                    duplicateTotal.value = 0;
-                    data.toString().split('\n').forEach((ele) => {
-                        if(ele.indexOf('checkResult|') > -1){
-                            duplicateImageList.value = ele.replace('checkResult|', '').replace('\r', '').split(',').map((ele) => {
-                                ele = ele.replace(/\\/g,'/').split('{}');
-                                return ele;
-                            });
-                        }
-                    });
-					// console.log(duplicateImageList.value[0]['0']);
-					if(duplicateImageList.value.length == 1 && !duplicateImageList.value[0]['0']){
-						duplicateImageList.value = [];
-					}
-                    // console.log(duplicateImageList.value);
-					if(duplicateImageList.value.length){
-						createMsg('图片查重已完成，结果如左侧所示', true);
-					}else{
-						createMsg('暂无重复图片');
-					}
-                    
-					// closeImageDuplicate(true);
-					// let timer = setTimeout(() => {
-					// 	clearTimeout(timer);
-					// 	timer = null;
-					// 	imageDuplicateCheck();
-					// }, 2000)
-                }
-            });
-        }
-        // 关闭图片查重
-        const closeImageDuplicate = (f = false) => {
-            if(imageDuplicate){
-                imageDuplicate.stdin.write(`close\n`, error => {
-                    if (error) {
-                        console.log(error);
-                    }
-                    imageDuplicate = null;
-					f ? imageDuplicateCheck() :null;
-                });
-            }
-        }
-        const changeDuplicate = (f) => {// 图片查重
-            isDuplicate.value = true;
-            duplicateImageList.value = [];
-            let duplicateImageOBJ = {};
-            duplicateTotal.value = imageList.value.length;
-            imageList.value.forEach((ele, index) => {
-                duplicateImageOBJ[drive+ele.name] = index+1;
-            });
-            duplicateImageO.value = duplicateImageOBJ;
-            // console.log(imageList.value.length, duplicateTotal.value);
-            imageDuplicate.stdin.write('getRepeatFile::'+drive+'/'+device+'/'+gid+'/'+vid+'\n', error => {
-                if (error) {
-                    console.log(error);
-                }
-            });
-            createMsg('图片查重已开始，请关注左侧进度', true);
-        }
-
         const loadImage = (e) => {//大图加载
             console.log(e.target.width, e.target.height, e.target.naturalWidth, e.target.naturalHeight);
             imgW.value = e.target.width;
@@ -959,8 +789,8 @@ export default {
             }));
 
             canvas.item(0).set({
-                borderColor: 'gray',
-                cornerColor: '#fff',
+                borderColor: '#85b83e',
+                cornerColor: '#85b83e',
                 cornerSize: 12,
                 transparentCorners: true
             });
@@ -975,8 +805,8 @@ export default {
                 }));
 
                 canvas.item(1).set({
-                    borderColor: 'gray',
-                    cornerColor: '#fff',
+                    borderColor: '#85b83e',
+                    cornerColor: '#85b83e',
                     cornerSize: 12,
                     transparentCorners: true
                 });
@@ -1039,9 +869,6 @@ export default {
                 }
             }
         }
-
-        
-        const start = ref(Date.now());
 
         const closeProcess = () => {
             changePropertyValue('isProcess', false);
@@ -1130,19 +957,10 @@ export default {
             //     timer = null;
             // }, 200);
         }
-		
-		// 对焦
-		const checkFocus = () => {
-			window.NikonClip.stdin.write('focus\n', error => {
-			    if (error) {
-			        console.log(error);
-			    }
-			});
-			createMsg('对焦成功', true);
-		}
         
         onMounted(() => {
 			volumeKey.value = vid;
+			// viewProcessMessage('InitCamera2.exe');
 			// 相机重置
 			handleReset(false);
 			// 图片复位
@@ -1151,8 +969,6 @@ export default {
             makeCameraDir(drive+'/'+device+'/'+gid+'/'+vid);
             // 缩略图文件夹
             makeCameraDir(drive+'/'+device+'/'+gid+'/'+vid+'_nail');
-            // 云端创建卷册文件夹
-            // sftpmkdir(device+'/'+gid+'/'+vid);
             // 键盘初始化
             enterKeyUp();
 			// 卷册列表
@@ -1175,8 +991,6 @@ export default {
 			imageIndex.value = 0;
 			imageURL.value = 'data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=';
 			imageURLActive.value = '';
-			// 关闭影像查重
-			// closeImageDuplicate();
 			// 离开相机
 			// closeNikon();
 			// 相机重置
@@ -1187,8 +1001,6 @@ export default {
 			makeCameraDir(drive+'/'+device+'/'+gid+'/'+vid);
 			// 缩略图文件夹
 			makeCameraDir(drive+'/'+device+'/'+gid+'/'+vid+'_nail');
-			// 云端创建卷册文件夹
-			// sftpmkdir(device+'/'+gid+'/'+vid);
 			// 键盘初始化
 			// enterKeyUp();
 			// 卷册列表
@@ -1226,16 +1038,8 @@ export default {
 		const deleteImageLists = () => {
 			msg.value = '正在批量删除，请稍等！';
 			isPromptBoxModule.value = true;
-			let checkImages = [], i = -1, max = imageList.value.length - 1, images = [];
+			let max = imageList.value.length - 1, images = [];
 			
-			// checkImageList.value.forEach((ele) => {
-			// 	imageList.value.forEach((ele2, index2) => {
-			// 		if(ele == ele2.name){
-			// 			i = index2;
-			// 		}
-			// 	});
-			// 	imageList.value.splice(i, 1);
-			// });
 			imageList.value.forEach((ele, index) => {
 				if(checkImageList.value.indexOf(ele.name) > -1){
 					console.log(index);
@@ -1250,10 +1054,9 @@ export default {
 			imageIndex.value = max ? max - 1 : 0;
 			imageList.value = images;
 			
-			// imageIndex.value = imageList.value.length - 1;
 			imageURL.value = imageList.value.length ? drive+imageList.value[imageIndex.value].name : '';
 			imageURLActive.value = imageList.value.length ? imageList.value[imageIndex.value].name : '';
-			// return;
+			
 			// 拍照顺序本地保存
 			writeFile(drive+'/'+device+'/'+gid+'/'+vid+'/image.json', JSON.stringify(imageList.value), 'w', () => {});
 			Observer();
@@ -1303,10 +1106,7 @@ export default {
 		// 1 待拍摄 2 拍摄中 3 自检中 4 同步中 12 机构审阅中 5 微站审阅中 6 打回中 7 完成
         onBeforeUnmount(() => {
             if(!isAdmin.value){
-				// autoCut('stopAutoCut');
                 enterKeyUpDestoryed();
-                // closeNikon();
-                // closeImageDuplicate();
 				startCheckTimer.value ? clearInterval(startCheckTimer.value) : null;
 				// 拍摄中、自检中 才能更新卷册实拍页数
 				detail.value.takeStatus >= 2 && detail.value.takeStatus <= 3 ? patchVolumeInfo(imageList.value.length, '') : null;
@@ -1316,12 +1116,10 @@ export default {
 		// 拍摄完成
         const imageCheck = (f) => {
 			patchVolumeStatus(3);
-			// patchVolumeInfo(imageList.value.length, '');
         }
 		// 自检完成 自检中 => 同步中、打回中 => 同步中
         const changeCheck = (f) => {
 			patchVolumeStatus(4);
-			// patchVolumeInfo(imageList.value.length, '');
         }
 
         // 旋转
@@ -1379,17 +1177,6 @@ export default {
 				createMsg('已重置成功', true);
 			}
 		}
-		// 旋转
-        const handleRotate = (f = true) =>{
-			if(isMagnifier.value == 1){
-				return;
-			}
-            if(f){
-                rotate.value = rotate.value + 90;
-            }else{
-                rotate.value = rotate.value - 90;
-            }
-        }
 		// 缩放
         const handleZoom = (f = true) =>{
 			if(isMagnifier.value == 1 || isNatural.value){
@@ -1507,10 +1294,21 @@ export default {
 						// 缩略图分页
 						initThumbnail(Math.ceil((imageIndex.value+1)/thumbnailLimit.value));
 					}else{
-						imageList.value[imageIndex.value+(imageIndex.value ? (imageList.value.length%5) && (imageIndex.value+1+5) > imageList.value.length ? (imageList.value.length%5) : 5 : 4)].selfChecked = '1'; //设置图片自检过
-						changeImage(imageIndex.value+(imageIndex.value ? (imageList.value.length%5) && (imageIndex.value+1+5) > imageList.value.length ? (imageList.value.length%5) : 5 : 4));
-						// 缩略图分页
-						initThumbnail(Math.ceil((imageIndex.value+1+(imageIndex.value ? (imageList.value.length%5) && (imageIndex.value+1+5) > imageList.value.length ? (imageList.value.length%5) : 5 : 4))/thumbnailLimit.value));
+						if(imageList.value.length <= 4){
+							imageList.value.forEach((ele) => {
+								ele.selfChecked = '1';
+							});
+							// 自检完成保存json
+							writeFile(drive+'/'+device+'/'+gid+'/'+vid+'/image.json', imageList.value.length ? JSON.stringify(imageList.value) : '[]', 'w', () => {});
+							clearInterval(startCheckTimer.value);
+							startCheckTimer.value = null;
+							createMsg('已自检，请进行下一步 自检完成', true);
+						}else{
+							imageList.value[imageIndex.value+(imageIndex.value ? (imageList.value.length%5) && (imageIndex.value+1+5) > imageList.value.length ? (imageList.value.length%5) : 5 : 4)].selfChecked = '1'; //设置图片自检过
+							changeImage(imageIndex.value+(imageIndex.value ? (imageList.value.length%5) && (imageIndex.value+1+5) > imageList.value.length ? (imageList.value.length%5) : 5 : 4));
+							// 缩略图分页
+							initThumbnail(Math.ceil((imageIndex.value+1+(imageIndex.value ? (imageList.value.length%5) && (imageIndex.value+1+5) > imageList.value.length ? (imageList.value.length%5) : 5 : 4))/thumbnailLimit.value));
+						}
 					}
 				}else{
 					imageList.value.forEach((ele) => {
@@ -1731,7 +1529,7 @@ export default {
 		// 缩略图分页
 		const thumbnailPage = ref(0);
 		const thumbnailPages = ref(0);
-		const thumbnailLimit = ref(50);
+		const thumbnailLimit = ref(200);
 		const thumbnailTotal = ref(0);
 		const thumbnailList = ref([]);
 		
@@ -1779,6 +1577,7 @@ export default {
 						msg.value = '';
 						isPromptBoxModule.value = false;
 						startCheckTimer.value = null;
+						createMsg('全部重命名结束！');
 					}
 				});
 			});
@@ -1843,11 +1642,10 @@ export default {
             goBack, imageURL, imageList, imageIndex, changeImage, deleteImage, toggleMore, cutText, isAuto, msg, 
             isMore, startCapture, changeConfirm, isConfirm, imageCheck, changeCheck, typeSet, changeTypeSet,
             isProcess, uploadIndex, drive, resionList, imageURLActive,  loadImage, closeProcess, nowTime, deviceKey, 
-            rotate, scale, x, y, dragStart, handleReset, handleRotate, handleZoom, imgW, imgH, isFabric, changeFabric, handleWheel, clearFabric,
-            yun, imageDuplicateCheck, changeDuplicate, duplicatePage, duplicateTotal, duplicateImageList, duplicateImageO, isDuplicate, 
-            handleAttachedSheet, isPromptBoxModule, detail, handleLeaveMsg, isShow, leaveMsgList, patchVolumeStatus, 
-			getCameraRotate, cameraRotate, rotateList, cameraList, getTypename, typename, isHelp, startCheck, multipleDelete, 
-			closePromptBox, checkFocus, finishRepulseRecord, sidebarShow, checkImage, checkImageList, mouseLMove, mouseLEnd, mouseLStart,
+            rotate, scale, x, y, dragStart, handleReset, handleZoom, imgW, imgH, isFabric, changeFabric, handleWheel, clearFabric,
+            yun, handleAttachedSheet, isPromptBoxModule, detail, handleLeaveMsg, isShow, leaveMsgList, patchVolumeStatus, 
+			getCameraRotate, cameraRotate, rotateList, cameraList, getTypename, typename, isHelp, startCheck, 
+			closePromptBox, finishRepulseRecord, sidebarShow, checkImage, checkImageList, mouseLMove, mouseLEnd, mouseLStart,
 			TH, IH, mouseMove, magnifierX, magnifierY, magnifierNaturalX, magnifierNaturalY, isMagnifier, handleMagnifier, magnifierOpen, magnifierClose, naturalOpen, naturalClose,
 			isNatural, handleNatural, multipleDeleteConfirm, handleResetImage, volumeList, volumeKey, changeVolumeKey, rotateImageByNikon, genealogyName, bgColor, bgColorList, changeBgColor, isColor, 
 			startCamera, startCheckTimer, page, changePage, MSG, handleDeleteImages, shootTime, autoCamera, autoCameraTimer,
@@ -2188,17 +1986,10 @@ export default {
             height: 14px;
             bottom: 0;
             left: 0;
-            // background: rgba(0,0,0,0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            // backdrop-filter: blur(8px);
-			font-size: 14px;
-			font-weight: bold;
-            i{
-                color: #fff;
-                // font-weight: bold;
-            }
+			font-size: 12px;
+			color: #fff;
+			display: block;
+			text-align: center;
         }
     }
 }

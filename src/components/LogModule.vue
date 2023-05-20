@@ -30,6 +30,8 @@
 	        const id = props.id;
 			
 			const logList = ref([
+			    {'name': '2023.5.11更新', 'title': true},
+				{'name': '拍机-手动对焦'},
 			    {'name': '2023.4.22更新', 'title': true},
 				{'name': '拍机-任务池-新增-直拍谱模块'},
 				{'name': '2023.3.31更新', 'title': true},

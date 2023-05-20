@@ -12,6 +12,7 @@
             </div>
             <h3 class="head-title">任务中心</h3>
             <div class="head-msg">
+                <button class="btn marginR10 samll" @click="openInitCamera">打开初始化程序</button>
                 <img class="msg" src="../assets/msg.svg" alt="消息" @click="isShow = 5" />
                 <i v-if="notReadMsgNumber">{{notReadMsgNumber}}</i>
             </div>
@@ -39,7 +40,7 @@
 			<SelectModule v-if="stage == 1" class="width130" :list="claimList" :defaultValue="claim" v-on:get-value="changeClaim" />
 			<button class="btn marginL10" @click="getTaskList">检索</button>
 			<button v-if="stage == 1" class="btn marginL10" @click="patchClaimBatchConfirm">批量认领</button>
-            <button v-if="stage == 2" class="btn marginL10" @click="createOfflineCatalog">创建离线家谱</button>
+            <button v-if="stage == 2" class="btn marginL10" @click="createOfflineCatalog">创建直拍家谱</button>
 			<button v-if="stage == 4" class="btn marginL10" @click="patchStatusBatch(3)">一键自检完成</button>
 			<button v-if="stage == 5" class="btn marginL10" @click="patchStatusBatch(4)">一键提交审阅</button>
 			
@@ -142,7 +143,7 @@ import { ref, reactive, onMounted, watch, watchEffect, computed, provide,readonl
 import { useRoute, useRouter } from 'vue-router'
 import { useState, changePropertyValue } from '../store';
 import { createMsg, getQueryVariable, getLocalTime, setValue, getSurplusDays } from '../util/ADS';
-import { makeCameraDir, sftpmkdir, sftprmdir, removeDir, openPath, readDirGetFileNames, writeFile } from '../composables/readFile';
+import { makeCameraDir, sftpmkdir, sftprmdir, removeDir, openPath, readDirGetFileNames, writeFile, viewProcessMessage, openNikon } from '../composables/readFile';
 import Loading from '../components/Loading.vue';
 import DiskManage from '../components/DiskManage.vue';
 import BillModule from '../components/BillModule.vue';
@@ -892,6 +893,16 @@ export default {
             catalogDetail.value = {};
         }
 
+        // 初始化程序打开
+        const openInitCamera = () => {
+            // viewProcessMessage('demo_capture.exe');
+            window.NikonClip = '';
+            window.initCamera = openNikon('/initCamera/InitCamera2', (data) => {
+			    console.log(`stdout: ${data}`);
+				// changePropertyValue('NikonData', data);
+			});
+        }
+
         return {
             isShow, stageList, stage, changeStage, memuList, isMenu, changeMenu, orgName, device, initImageJsonConfirm, 
             thead, parameter, taskList, stageO, taskClaim, taskGiveUp, goCamera, goImage, deviceID, isAdmin, 
@@ -901,7 +912,7 @@ export default {
 			keyWord, patchStatusBatch, isConfirm, changeConfirm, taskClaimConfirm, patchClaimBatchConfirm, openVolumeDialog,
 			handleEditCatalog, catalogDetail, closeCatalog, handleAddVolume, closeVolume, handleAddVolume, internalSerialNumber, 
 			handleEditVolume, volumeDetail, handleDeleteVolume, patchUpdateReason, claimList, claim, changeClaim,
-			gcKey, createOfflineCatalog, isCatalog,
+			gcKey, createOfflineCatalog, isCatalog, openInitCamera, 
         }
     }
 }
@@ -1191,5 +1202,14 @@ export default {
 }
 .disabled{
 	background: #ddd;
+}
+.samll{
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 15px;
+}
+.marginR10{
+    margin-right: 10px;
 }
 </style>

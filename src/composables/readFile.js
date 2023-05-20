@@ -331,6 +331,33 @@ const renameFile = (drive, path, newPath, i, callback) => {
 	});
 }
 
+// 获取进程详细信息
+// const { exec } = require('child_process');
+function viewProcessMessage(name, cb){
+    let cmd = process.platform === 'win32' ? 'tasklist' : 'ps aux';
+    exec(cmd, (err, stdout, stderr) => {
+        if(err){
+            return console.error(err);
+        }
+        stdout.split('\n').filter((line) => {
+            let processMessage = line.trim().split(/\s+/);
+            let processName = processMessage[0]; //进程名
+
+            if(processName === name){
+                console.log(processMessage);
+                process.kill(processMessage[1]);
+                // return cb(processMessage[1]); // 进程id
+            }
+        });
+    });
+}
+
+// viewProcessMessage('demo_capture.exe', (msg) => {
+//     console.error(msg);
+//     // 关闭进程
+//     process.kill(msg);
+// });
+
 export {
     showNotification,
     openPath,
@@ -352,4 +379,5 @@ export {
 	readFile2, 
 	createReadStream,
 	renameFile,
+    viewProcessMessage, 
 }

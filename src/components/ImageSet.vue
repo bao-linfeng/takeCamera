@@ -1,24 +1,14 @@
 <template>
     <ul class="image-set-wrap">
-		<!-- <li v-if="(takeStatus >= 1 && takeStatus <= 2) || takeStatus == 6">
-		    <span>设置亮度</span>
-			<input class="shutterSpeed" @keyup.enter.stop="sendShutterSpeed" type="number" v-model="shutterSpeed" placeholder="亮度" />
-		</li> -->
-        <!-- <li v-if="takeStatus >= 1 && takeStatus <= 3">
-            <span @click="changeDuplicate">图片查重</span>
-        </li> -->
+		<li v-if="(takeStatus >= 1 && takeStatus <= 3) || takeStatus == 6">
+		    <span @click="autoFocus">自动对焦</span>
+		</li>
 		<li v-if="(takeStatus >= 1 && takeStatus <= 3) || takeStatus == 6">
 		    <span @click="manualInsertion">手动补拍</span>
 		</li>
 		<li v-if="(takeStatus >= 1 && takeStatus <= 3) || takeStatus == 6">
 		    <span @click="multipleDelete">一键删除</span>
 		</li>
-		<li v-if="takeStatus == 3 || takeStatus == 6">
-		    <span @click="rename">一键命名</span>
-		</li>
-		<!-- <li v-if="(takeStatus >= 1 && takeStatus <= 2) || takeStatus == 6">
-		    <span @click="checkFocus">自动对焦</span>
-		</li> -->
         <li>
             <span class="marginR10">拍摄完成</span>
             <img @click="changeImage" :src="toggleImage ? on : off" alt="">
@@ -31,6 +21,9 @@
 		</li>
 		<li v-if="(takeStatus == 2 || takeStatus == 3) || takeStatus == 6" @click="startCheck(1)">
 		    <span class="marginR10">逐拍自检</span>
+		</li>
+		<li v-if="takeStatus == 3 || takeStatus == 6">
+		    <span @click="rename">一键命名</span>
 		</li>
         <li v-if="takeStatus >= 3">
             <span class="marginR10">自检完成</span>
@@ -60,7 +53,7 @@ export default {
 		takeStatus: Number,
 		syncSuccess: Boolean,
     },
-    emits: ['manual-insertion', 'start-camera','check-focus', 'multiple-delete', 'start-check', 'change-image', 'change-check', 'change-fabric', 'change-duplicate'],
+    emits: ['manual-insertion', 're-name', 'start-camera', 'multiple-delete', 'start-check', 'change-image', 'change-check', 'change-fabric'],
     setup(props, context) {
         const { userKey, siteKey, code } = useState();
         const router = useRouter();
@@ -82,7 +75,7 @@ export default {
 				}
 				if(isConfirm.value == 4){
 					toggleImage.value = false;
-					context.emit('rename', '');
+					context.emit('re-name', '');
 				}
 			}
 			
@@ -100,12 +93,6 @@ export default {
 				isConfirm.value = 2;
 			}
         }
-
-        const isDuplicate = ref(false);
-        const changeDuplicate = () => {
-            isDuplicate.value = !isDuplicate.value;
-            context.emit('change-duplicate', isDuplicate.value);
-        }
 		
 		const startCheck = (i) => {
 			context.emit('start-check', i);
@@ -113,10 +100,6 @@ export default {
 		
 		const multipleDelete = () => {
 			context.emit('multiple-delete', '');
-		}
-		
-		const checkFocus = () => {
-			context.emit('check-focus', '');
 		}
 		
 		const shutterSpeed = ref('40');
@@ -147,10 +130,22 @@ export default {
 			context.emit('manual-insertion', 1);
 		}
 
+		// 自动对焦
+		const autoFocus = () => {
+			if(window.NikonClip){
+                window.NikonClip.stdin.write(`focus\n`, error => {
+                    if(error){
+                        console.log(error);
+                    }
+                });
+				createMsg('对焦成功', true);
+            }
+		}
+
         return {
-            on, off, toggleImage, toggleCheck, changeImage, changeCheck, isDuplicate, changeDuplicate, startCamera, 
-			startCheck, multipleDelete, checkFocus, shutterSpeed, sendShutterSpeed, changeConfirm, isConfirm, rename,
-			manualInsertion, 
+            on, off, toggleImage, toggleCheck, changeImage, changeCheck, startCamera, 
+			startCheck, multipleDelete, shutterSpeed, sendShutterSpeed, changeConfirm, isConfirm, rename,
+			manualInsertion, autoFocus,
         }
     }
 }

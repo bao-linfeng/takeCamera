@@ -2,11 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
  <Targets>
-  <Target Name="D:\caffe\deepocr_20190402\trunk\nikoncswrapper_v2.1\src\demo_capture\bin\Debug\demo_capture.exe">
+  <Target Name="C:\Users\Administrator\Desktop\DCam-1.0.0-win2\resources\app\NikonCtrl\demo_capture.exe">
    <Modules>
     <Module Name="demo_capture.exe">
      <Messages>
-      <Message TypeName="MarkWindowsFormsEntryPointsWithStaThread" Category="Microsoft.Usage" CheckId="CA2232" Status="Active" Created="2023-03-31 18:22:52Z" FixCategory="NonBreaking">
+      <Message TypeName="MarkWindowsFormsEntryPointsWithStaThread" Category="Microsoft.Usage" CheckId="CA2232" Status="Active" Created="2023-05-19 09:50:15Z" FixCategory="NonBreaking">
        <Issue Certainty="95" Level="Error">使用 STAThreadAttribute 来标记程序集 'demo_capture.exe' 中的入口点方法 'Program.Main(string[])'。</Issue>
       </Message>
      </Messages>
@@ -15,26 +15,15 @@
        <Types>
         <Type Name="DemoCapture" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2023-03-31 18:22:52Z" FixCategory="DependsOnFix">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2023-05-19 09:50:15Z" FixCategory="DependsOnFix">
            <Issue Name="DependsOnFix" Certainty="95" Level="CriticalError">在 'DemoCapture' 上实现 IDisposable，因为它创建下列 IDisposable 类型的成员: 'AutoResetEvent'。如果以前提供过 'DemoCapture'，对于现有使用者来说，向此类型添加用于实现 IDisposable 的新成员属于重大更改。</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#ToMyInt32(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="RethrowToPreserveStackDetails" Category="Microsoft.Usage" CheckId="CA2200" Status="Active" Created="2023-03-31 18:22:52Z" FixCategory="NonBreaking">
-             <Issue Certainty="95" Level="Error" Path="D:\caffe\deepocr_20190402\trunk\nikoncswrapper_v2.1\src\demo_capture" File="Program.cs" Line="182">'DemoCapture.ToMyInt32(string)' 再次引发捕获的异常并将其显式地指定为一个参数。请改用不带参数的“throw”以保留该异常最初引发时所在的堆栈位置。</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-        <Type Name="Program" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
-         <Members>
-          <Member Name="#readLine()" Kind="Method" Static="True" Accessibility="Private" ExternallyVisible="False">
-           <Messages>
-            <Message TypeName="DoNotLockOnObjectsWithWeakIdentity" Category="Microsoft.Reliability" CheckId="CA2002" Status="Active" Created="2023-03-31 18:22:52Z" FixCategory="NonBreaking">
-             <Issue Certainty="75" Level="CriticalError" Path="D:\caffe\deepocr_20190402\trunk\nikoncswrapper_v2.1\src\demo_capture" File="Program.cs" Line="1072">'Program.readLine()' 锁定类型 'string' 的引用。请使用对具有强标识的对象的锁定替换它。</Issue>
+            <Message TypeName="RethrowToPreserveStackDetails" Category="Microsoft.Usage" CheckId="CA2200" Status="Active" Created="2023-05-19 09:50:15Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="D:\caffe\deepocr_20190402\trunk\nikoncswrapper_v2.1\src\demo_capture" File="Program.cs" Line="185">'DemoCapture.ToMyInt32(string)' 再次引发捕获的异常并将其显式地指定为一个参数。请改用不带参数的“throw”以保留该异常最初引发时所在的堆栈位置。</Issue>
             </Message>
            </Messages>
           </Member>
@@ -48,16 +37,6 @@
   </Target>
  </Targets>
  <Rules>
-  <Rule TypeName="DoNotLockOnObjectsWithWeakIdentity" Category="Microsoft.Reliability" CheckId="CA2002">
-   <Name>不要锁定具有弱标识的对象</Name>
-   <Description>不要锁定可能跨 AppDomain 抽取的对象或没有强标识的对象。</Description>
-   <Resolution Name="Default">{0} 锁定类型 {1} 的引用。请使用对具有强标识的对象的锁定替换它。</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182290.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="75">CriticalError</MessageLevel>
-   <File Name="reliabilityrules.dll" Version="14.0.0.0" />
-  </Rule>
   <Rule TypeName="MarkWindowsFormsEntryPointsWithStaThread" Category="Microsoft.Usage" CheckId="CA2232">
    <Name>使用 STAThread 标记 Windows 窗体的入口点</Name>
    <Description>引用 System.Windows.Forms 的程序集应具有 STAThreadAttribute 特性。未能应用此特性将很可能导致应用程序无法运行。Windows 窗体依赖于一些使用 STA 模型的组件。</Description>
